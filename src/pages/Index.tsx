@@ -1,6 +1,7 @@
 
-import { useState } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Dashboard from '../components/Dashboard';
 import InnovativeThoughts from '../components/InnovativeThoughts';
@@ -18,8 +19,16 @@ import UserManagement from '../components/UserManagement';
 import Header from '../components/Header';
 
 const Index = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -53,6 +62,10 @@ const Index = () => {
         return <Dashboard />;
     }
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">

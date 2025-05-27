@@ -1,5 +1,8 @@
 
-import { Bell, User, Search, Menu } from 'lucide-react';
+import { Bell, User, Search, Menu, LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -7,6 +10,19 @@ interface HeaderProps {
 }
 
 const Header = ({ toggleSidebar, isSidebarCollapsed }: HeaderProps) => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error('Error signing out');
+    } else {
+      toast.success('Signed out successfully');
+      navigate('/');
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 bg-gray-800 border-b border-gray-700 px-6 py-4 z-50">
       <div className="flex items-center justify-between">
@@ -48,7 +64,14 @@ const Header = ({ toggleSidebar, isSidebarCollapsed }: HeaderProps) => {
             <div className="bg-gray-700 p-2 rounded-full">
               <User className="h-5 w-5" />
             </div>
-            <span className="hidden md:block">John Doe</span>
+            <span className="hidden md:block">{user?.email}</span>
+            <button
+              onClick={handleSignOut}
+              className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-red-400 hover:text-red-300"
+              title="Sign Out"
+            >
+              <LogOut className="h-5 w-5" />
+            </button>
           </div>
         </div>
       </div>
